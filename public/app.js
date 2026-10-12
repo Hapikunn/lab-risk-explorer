@@ -44,6 +44,10 @@
       function matches(s){const v=scope.value;if(v==='all'||v==='actor:attacker')return true;const [kind,id]=v.split(':');return kind==='actor'?s.actor===id:s.edge===id||(id==='order'&&s.edge==='report');}
       function chooseScope(value){scope.value=value;const options=all.filter(matches);if(!options.some(s=>s.id===selected.id))selected=(value.startsWith('edge:')?options.find(s=>!s.actor):null)||options[0];show();}
       function show(){
+        root.dataset.scenarioId=selected.id;
+        root.dataset.scenarioCode=selected.code;
+        root.dataset.scenarioTitle=selected.title;
+        root.dispatchEvent(new CustomEvent('scenario-selected',{detail:{id:selected.id,code:selected.code,title:selected.title}}));
         list.replaceChildren();
         all.filter(matches).forEach(s=>{const b=document.createElement('button');b.type='button';b.className='cursor-interaction';b.setAttribute('aria-pressed',String(s.id===selected.id));b.dataset.scenario=s.id;const code=document.createElement('span');code.className='ls-id';code.textContent=s.code;const body=document.createElement('span');body.className='ls-list-item';body.textContent=s.short;const meta=document.createElement('span');meta.className='ls-list-meta';meta.textContent=s.actor?'主体関連 · '+names[s.actor]:'二者間の受け渡し';body.appendChild(meta);b.appendChild(code);b.appendChild(body);b.addEventListener('click',()=>{selected=s;show();});list.appendChild(b);});
         ['title','before','intervention','after','condition','defense','entry','evidence','limit'].forEach(k=>set(k,selected[k]));
@@ -75,4 +79,4 @@
       scope.addEventListener('change',()=>chooseScope(scope.value));root.querySelectorAll('[data-actor]').forEach(b=>b.addEventListener('click',()=>chooseScope('actor:'+b.dataset.actor)));
       new ResizeObserver(draw).observe(map);show();
     })();
-  
+

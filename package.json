@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "node server.js",
-    "check": "node --check public/app.js && node --check server.js"
+    "check": "node --check public/app.js && node --check public/risk-panel.js && node --check public/risk-model.js && node --check server.js",
+    "test": "node --test"
   },
   "engines": {
     "node": ">=22"

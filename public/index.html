@@ -7,6 +7,7 @@
 <title>Lab Risk Scenario Explorer</title>
 <link rel="stylesheet" href="./style.css">
 <script src="./app.js" defer></script>
+<script type="module" src="./risk-panel.js"></script>
 </head>
 <body>
 <div id="lab-scenario-three-columns-oct12">
@@ -50,6 +51,23 @@
       </section>
     </aside>
   </div>
+  <section class="risk-panel" id="risk-panel" aria-label="選択シナリオのリスク評価">
+    <div class="risk-heading"><div><h3>リスク評価・Tier表</h3><div id="risk-scenario"></div></div><span class="ls-tag">基準案 v1 · 仮評価</span></div>
+    <p class="risk-note">実測頻度は未測定です。下の「起こりやすさ」は、指定した構成・現行対策・今後12か月を前提にした定性推定です。未確認を「低い」と判断しません。</p>
+    <div class="risk-grid">
+      <div><label for="risk-likelihood">起こりやすさ</label><select id="risk-likelihood"><option value="unknown">未評価</option></select><p>接点、権限、成立条件、防御、攻撃者の能力・標的性を確認。</p></div>
+      <div><label for="risk-impact">起きた場合の影響度</label><select id="risk-impact"><option value="unknown">未評価</option></select><p>情報・結果・試料・稼働・人と環境を別々に考え、根拠のある最大影響を選択。</p></div>
+      <div class="risk-outcome" aria-live="polite"><label>総合Tier（対応優先度）</label><strong id="risk-tier" data-level="U">U · 未評価</strong><p id="risk-status">評価根拠を記録してください。</p></div>
+    </div>
+    <div class="risk-form">
+      <div><label for="risk-context">対象構成・現行対策</label><input id="risk-context" maxlength="1000" placeholder="例：外部APIを使う構成。制御PCは隔離。承認照合は未確認。"></div>
+      <div><label for="risk-evidence">根拠の種類（自己申告）</label><select id="risk-evidence"><option value="hypothesis">仮説・未確認</option><option value="literature">文献・類似事例</option><option value="configuration">設定・権限を確認</option><option value="reproduction">対象構成で再現</option></select></div>
+      <div class="risk-reason"><label for="risk-rationale">評価理由・証拠・未確認事項</label><textarea id="risk-rationale" rows="2" maxlength="3000" placeholder="何を確認してL/Iを選んだか。攻撃の成立と、生物学的影響の証拠は分けて記録。"></textarea></div>
+    </div>
+    <p class="risk-note" id="risk-storage">評価はこのブラウザ内に保存。サーバー送信・他者との共有はありません。</p>
+    <details open><summary>総合Tierの判定表（提案・未検証）</summary><div class="risk-table-wrap"><table class="risk-table"><caption>L＝起こりやすさ、I＝影響度。数値の掛け算ではなく、議論用の対応表です。</caption><thead><tr><th scope="col">L / I</th><th scope="col">I1</th><th scope="col">I2</th><th scope="col">I3</th><th scope="col">I4</th></tr></thead><tbody id="risk-matrix-body"></tbody></table></div><p class="risk-note">R1：経過確認 ／ R2：対策を検討 ／ R3：優先して検証・対策 ／ R4：実行前に責任者レビュー。低いLでも深刻なIを埋もれさせない基準案です。</p></details>
+    <details><summary>L/Iの基準・根拠の読み方</summary><div class="risk-criteria-grid"><table class="risk-table"><caption>起こりやすさの基準案</caption><tbody id="risk-likelihood-criteria"></tbody></table><table class="risk-table"><caption>影響度の基準案</caption><tbody id="risk-impact-criteria"></tbody></table></div><p class="risk-note">根拠の種類は評価の確かさを説明するラベルです。選択だけで証拠が確認されたことにはなりません。実測頻度を出すには、監視範囲・期間・検知能力・試行数や被害件数などが必要です。模擬テストの成功率を現実の発生確率へ換算しません。</p><p class="risk-note">参考：<a href="https://csrc.nist.gov/pubs/sp/800/30/r1/final" target="_blank" rel="noopener noreferrer">NIST SP 800-30</a>の定性評価と不確実性の考え方。段階・対応表は本デモ独自の提案で、標準への準拠を証明するものではありません。施設能力のAST分類とは別です。</p></details>
+  </section>
 </div>
 
 <footer class="page-footer">議論用の仮説です。実設備の脆弱性診断・生物学的影響の評価は行いません。<br>
