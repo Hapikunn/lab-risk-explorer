@@ -1,0 +1,155 @@
+{
+  "report_date": "2026-10-13",
+  "scope": "Public-source comparison; no audit of Kiga lab or product vulnerabilities",
+  "sources": [
+    {
+      "id": "S01",
+      "title": "Beckman Coulter：Biomek i5公式商品説明",
+      "url": "https://www.beckman.com/liquid-handlers/biomek-i-series-automated-workstations/biomek-i5",
+      "source_type": "manufacturer_product",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "25 deck positions",
+        "liquid handling and optional integration"
+      ],
+      "limitations": "Installed options and software 5.1.11 are not verified."
+    },
+    {
+      "id": "S02",
+      "title": "Beckman Coulter：Echo 650公式商品説明",
+      "url": "https://store.beckman.com/p/echo-650-series-acoustic-liquid-handlers/001-16079",
+      "source_type": "manufacturer_product",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Acoustic liquid transfer"
+      ],
+      "limitations": "Example model only; local Echo model is unknown."
+    },
+    {
+      "id": "S03",
+      "title": "ECL：How Cloud Laboratories Work",
+      "url": "https://www.emeraldcloudlab.com/how-it-works/",
+      "source_type": "provider_workflow",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Remote experiment design and data return"
+      ],
+      "limitations": "Remote access does not establish unmanned operation."
+    },
+    {
+      "id": "S04",
+      "title": "ECL：ExperimentSampleManipulation公式文書",
+      "url": "https://www.emeraldcloudlab.com/helpfiles/experimentsamplemanipulation",
+      "source_type": "provider_technical_documentation",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Manual and robotic operations",
+        "STARlet workcell capabilities"
+      ],
+      "limitations": "Describes supported operations, not every user workflow."
+    },
+    {
+      "id": "S05",
+      "title": "Arias et al. (2024)：Scientific Discovery at the Press of a Button: Navigating Emerging Cloud Laboratory Technology。査読論文",
+      "url": "https://doi.org/10.1002/admt.202400084",
+      "source_type": "peer_reviewed_user_report",
+      "published_date": "2024",
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Hybrid human/robot operation",
+        "Instruction translation, scheduling and data upload"
+      ],
+      "limitations": "A user report of ECL; not an audit of all laboratories."
+    },
+    {
+      "id": "S06",
+      "title": "ECL：実行と装置の説明",
+      "url": "https://www.emeraldcloudlab.com/how-it-works/run/",
+      "source_type": "provider_capability",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Examples of available analytical equipment"
+      ],
+      "limitations": "Provider claims; capability of each submitted experiment differs."
+    },
+    {
+      "id": "S07",
+      "title": "CMU (2026-07-22)：Connecting Autonomous Laboratories to Speed Scientific Advancement。大学公式記事・施設写真",
+      "url": "https://www.cmu.edu/news/stories/archives/2026/july/connecting-autonomous-laboratories-to-speed-scientific-advancement",
+      "source_type": "university_news",
+      "published_date": "2026-07-22",
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Facility photograph"
+      ],
+      "limitations": "Planned inter-lab research is not a completed deployment."
+    },
+    {
+      "id": "S08",
+      "title": "Smith et al. (2026)：Using a GPT-5-driven autonomous lab to optimize the cost and titer of cell-free protein synthesis。プレプリント公開記録",
+      "url": "https://doi.org/10.64898/2026.02.05.703998",
+      "source_type": "preprint_record",
+      "published_date": "2026-02-05",
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Bounded CFPS closed-loop example"
+      ],
+      "limitations": "Public abstract/record checked; full manuscript was not retrieved."
+    },
+    {
+      "id": "S09",
+      "title": "Ginkgo公式公開リポジトリ：ginkgo-automation-cfps",
+      "url": "https://github.com/ginkgobioworks/ginkgo-automation-cfps",
+      "source_type": "official_code_repository",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Pydantic validation",
+        "Catalyst and RAC interface"
+      ],
+      "limitations": "Published code is not a complete physical facility emulator."
+    },
+    {
+      "id": "S10",
+      "title": "Ginkgo提供企業発表 (2026-02-05)：GPT-5を用いたCFPS閉ループ実験と人の介在",
+      "url": "https://www.prnewswire.com/news-releases/ginkgo-bioworks-autonomous-laboratory-driven-by-openais-gpt-5-achieves-40-improvement-over-state-of-the-art-scientific-benchmark-302680619.html",
+      "source_type": "company_press_release",
+      "published_date": "2026-02-05",
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Human reagent preparation, loading/unloading and oversight",
+        "Facility photograph"
+      ],
+      "limitations": "Company report of a bounded experiment; not proof of universal autonomy."
+    },
+    {
+      "id": "S11",
+      "title": "Ginkgo公式ハードウェア説明：RACs & Tiles",
+      "url": "https://www.ginkgo.bio/product/hardware",
+      "source_type": "provider_hardware",
+      "published_date": null,
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Modular carts, robot arms and plate transport"
+      ],
+      "limitations": "Equipment-dependent capabilities; labeled rendering is not a facility photograph."
+    },
+    {
+      "id": "S12",
+      "title": "CMU (2021)：Instrument list for initial purchases。初期購入リスト",
+      "url": "https://events.mcs.cmu.edu/cloud-lab-information-sessions/wp-content/uploads/sites/24/2021/06/CMU_Academic_Cloud_Lab_instrument_list_20210623.pdf",
+      "source_type": "university_initial_purchase_list",
+      "published_date": "2021-06-23",
+      "accessed_date": "2026-10-13",
+      "supported_claims": [
+        "Equipment categories for planned initial purchases"
+      ],
+      "limitations": "Not a current installed or operational instrument inventory."
+    }
+  ]
+}

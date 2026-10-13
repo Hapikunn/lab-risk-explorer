@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>想定するラボの装置・能力・自動化範囲</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#eef2f5;color:#1b2b39;font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;line-height:1.85}
+main{max-width:1080px;margin:36px auto;background:white;padding:48px 54px;border-top:7px solid #176b72;border-radius:6px}
+h1{font-size:2rem;line-height:1.5;margin:0 0 18px}h2{font-size:1.45rem;margin-top:48px;padding-bottom:8px;border-bottom:2px solid #c4dadd}h3{font-size:1.1rem;margin-top:28px}
+a{color:#176b72;overflow-wrap:anywhere}p,li{overflow-wrap:anywhere}strong{color:#124d57}img{display:block;max-width:100%;max-height:430px;height:auto;margin:26px auto;object-fit:contain}
+.table-scroll{overflow-x:auto;margin:24px 0}table{border-collapse:collapse;width:100%;font-size:.9rem;line-height:1.65}th,td{padding:12px 14px;vertical-align:top;border:1px solid #d5dfe3}th{background:#eaf3f3;text-align:left}tbody tr:nth-child(even){background:#f8fafb}
+li{margin-bottom:8px}footer{margin-top:40px;padding-top:20px;border-top:1px solid #d5dfe3;color:#526672;font-size:.85rem}
+@media(max-width:700px){main{margin:0;padding:26px 20px;border-radius:0}h1{font-size:1.5rem}table{min-width:650px}}
+@media print{@page{size:A4;margin:16mm}body{background:white;font-size:10pt}main{margin:0;padding:0;border:0;max-width:none}h1{font-size:20pt}h2{font-size:15pt;break-after:avoid;margin-top:24px}h3{break-after:avoid}img{max-height:85mm;break-inside:avoid}table{font-size:8pt;min-width:0}th,td{padding:6px}thead{display:table-header-group}tr{break-inside:avoid}.table-scroll{overflow:visible}a{color:inherit}footer{font-size:8pt}}
+</style></head><body><main><h1 id="想定するラホはとこまて自動化されているか">想定するラボは、どこまで自動化されているか</h1>
+
+<p>装置・能力・人の介在を説明する調査資料／2026-10-13</p>
+
+<h2 id="1-最初に伝えたいこと">1. 最初に伝えたいこと</h2>
+
+<p><strong>今回のデモは「受注から出荷まで完全無人の施設」を必須としない。外部から依頼・検体を受け取り、ソフトウェアが複数装置の実行と結果の対応を管理する、現場スタッフ付きのラボを基本想定にする。</strong> これは今回の設計提案で、特定施設の実装を再現したものではない。</p>
+
+<p>実在するクラウドラボには、人とロボットが協働する運用がある。ECLの公式文書は、作業をManualとRoboticに分け、前者をオペレーター、後者を分注ワークセルが実行すると説明する。[S04] ECL利用経験を報告する2024年論文も、ソフトウェアによる工程・実行待ちの管理と、人が自動装置と協働する混成運用を記述している。[S05]</p>
+
+<p>無細胞合成の限定した閉ループ実験では、設計・実行・解析の反復を自律化した例もある。ただし、試薬準備、装填・回収、システム監督などに人が残る。[S08][S10] <strong>遠隔利用できること、装置が自動実行すること、次の実験を自律決定すること、施設全体が無人であることは別である。</strong></p>
+
+<h3 id="用語の区別">用語の区別</h3>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>用語</th>
+  <th>この資料での意味</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>部分自動化</td>
+  <td>分注など決めた作業を装置が実行。計画・装填・搬送などは別の担当が行う</td>
+</tr>
+<tr>
+  <td>統合自動化</td>
+  <td>複数装置の命令・順序・データをソフトウェアが連携させる</td>
+</tr>
+<tr>
+  <td>クラウドラボ</td>
+  <td>利用者が遠隔から実験を依頼し、データを受け取る利用形態</td>
+</tr>
+<tr>
+  <td>閉ループ／自律実験</td>
+  <td>結果の解析が次の実験条件の選択につながり、反復を進める</td>
+</tr>
+<tr>
+  <td>受注から出荷まで無人</td>
+  <td>受領・補充・保守・例外処理・梱包まで含む。今回調べた資料では一貫した無人運用を確認できない</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2 id="2-実在例abiomekechoを使う部分自動化">2. 実在例A：Biomek／Echoを使う部分自動化</h2>
+
+<p>Biomek i5はピペットによる液体操作のワークステーション。公式ページには25のデッキ位置、分注ヘッドの選択肢、グリッパー、デッキ内外の装置統合などが示される。[S01] Echoは音響による微量分注の装置で、ここでは650を装置カテゴリの例として扱う。[S02] 研究室にあるEchoの型番・構成は未確認。</p>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>装置の例</th>
+  <th>できること</th>
+  <th>それだけでは分からないこと</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>Biomek i5</td>
+  <td>設定した手順で分注・液体移送を実行。構成に応じてラボウェアを移動</td>
+  <td>受注・検体内容の確認・次の実験の決定まで自動か</td>
+</tr>
+<tr>
+  <td>Echo 650の例</td>
+  <td>微量の非接触分注</td>
+  <td>実際の設置機種、他装置との搬送・データ連携</td>
+</tr>
+<tr>
+  <td>温調装置・プレートリーダー</td>
+  <td>反応条件の維持、蛍光などの測定</td>
+  <td>現研究室の機種と分注器からの自動搬送の有無</td>
+</tr>
+</tbody>
+</table></div>
+
+<p><strong>比較用の運用想定</strong>：人が計画を設定し、試薬・プレートを置き、装置を実行し、必要な装置間移送と結果確認を行う。毎回すべてを手入力するとは限らず、保存したメソッドを再利用できる。この運用像は説明のための想定で、木賀研の監査結果ではない。</p>
+
+<p>現行メーカーサイトのソフトウェア機能を、研究室のBiomekソフト5.1.11にもあると推定しない。接続方式・ライセンス・導入オプションは現物で確認する。</p>
+
+<p><img src="https://media.beckman.com/-/media/automation/products/instruments/biomek-i-series/i5/automation-liquid-handler-biomek-i5-full-view-2017-04.png?rev=91f0456c688f46719358aaf196c80f33" alt="Biomek i5の公式製品画像" /></p>
+
+<p>画像：Beckman Coulter Life Sciencesの公式製品画像。[S01] 木賀研の現物写真ではない。外観だけで装置間の自動化範囲は判断できない。</p>
+
+<h2 id="3-実在例beclcmuの遠隔統合ラホ">3. 実在例B：ECL／CMUの遠隔・統合ラボ</h2>
+
+<p>ECLでは利用者が検体を送り、Command Centerで実験を設計し、施設で実行した結果をデータベース上で受け取る。[S03] 公式説明はHPLC、質量分析、NMRなどの幅広い装置を挙げている。[S06] 施設全体の能力と、特定の依頼で利用できる操作は区別する。</p>
+
+<h3 id="分注器を中心にしたワークセルの具体像">分注器を中心にしたワークセルの具体像</h3>
+
+<p>公式のHamilton STARletワークセル図には、分注器、プレート搬送アーム、ヒーターシェーカー、磁気ビーズ分離、プレートリーダーなどが描かれる。文書はデッキ内の処理と、アームでつなぐデッキ外の測定・処理を説明している。[S04]</p>
+
+<p><img src="https://www.emeraldcloudlab.com/helpfiles/Files/ExperimentSampleManipulation.en/I_5.png" alt="ECLのHamilton STARletワークセル構成画像" /></p>
+
+<p>画像：ECL公式文書の装置構成図。[S04] 製品・装置画像に説明を加えた図であり、施設全景の実写真とは別。特定の依頼がこの装置で実行されるとは保証しない。</p>
+
+<h3 id="大規模施設の具体像">大規模施設の具体像</h3>
+
+<p><img src="https://www.cmu.edu/news/sites/default/files/2026-07/BioChemInnovationCloudLab.png" alt="CMUのBiological and Chemical Innovation Cloud Labの施設写真" /></p>
+
+<p>写真：Carnegie Mellon University、2026年7月の公式記事。[S07] 実施設の全景を示す。写真から各装置の型番・稼働状況・無人化率を推定しない。</p>
+
+<p>CMUが公開した<strong>2021年の初期購入リスト</strong>には、以下の装置カテゴリがある。[S12] 現在の設置数量や利用可能メニューを示す一覧ではない。</p>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>カテゴリ</th>
+  <th>装置例</th>
+  <th>機能のイメージ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>液体操作</td>
+  <td>ロボット分注ワークセル、音響分注器</td>
+  <td>液体を移す、試料を並列に準備</td>
+</tr>
+<tr>
+  <td>保管・搬送</td>
+  <td>保管システム、冷凍庫、搬送用品</td>
+  <td>検体を保管し、次の処理へ渡す</td>
+</tr>
+<tr>
+  <td>反応・前処理</td>
+  <td>温調・撹拌装置、遠心機、サーマルサイクラー</td>
+  <td>条件を維持し、試料を処理</td>
+</tr>
+<tr>
+  <td>測定・分離</td>
+  <td>プレート測定、HPLC、質量分析、NMR</td>
+  <td>量や性質を測定・解析</td>
+</tr>
+<tr>
+  <td>運営設備</td>
+  <td>受入・出荷設備、廃棄物設備、オペレーターカート</td>
+  <td>実験以外の施設運用を支える</td>
+</tr>
+</tbody>
+</table></div>
+
+<h3 id="人か入力しないと動かないのか">人が入力しないと動かないのか</h3>
+
+<p>利用者は初めに実験の目的・条件をソフトウェアに記述する。ECLの利用報告では、コードを実行命令へ変換し、実行待ちとデータアップロードをソフトウェアが管理する。[S05] したがって、利用者が各装置を手で操作するモデルとは異なる。ただし、全装置で手動転記が一切ないことや、施設内に人がいないことまでは確認していない。</p>
+
+<h2 id="4-実在例cginkgoの無細胞合成閉ルーフ実験">4. 実在例C：Ginkgoの無細胞合成・閉ループ実験</h2>
+
+<p>2026年の研究例は、GPT-5と自動化基盤を接続し、無細胞タンパク質合成の条件を反復して評価する限定した用途である。[S08][S10] 汎用の実験を何でも無人で実行できるという実証ではない。</p>
+
+<p>公開コードは、AIの実験設計をPydanticで検証し、Catalystが複数装置のワークフローへ変換してRACで実行する接続を説明する。[S09] これはコードで設計・実行・データをつなぐ実在の参考例になるが、公開リポジトリだけで商用ラボ全体をローカル再現できるとは限らない。</p>
+
+<p>人が残る作業は、企業発表では<strong>試薬準備、装填・回収、システム監督</strong>とされる。[S10] 試薬の調達や検体配送、出荷までの完全無人化は、この研究の確認範囲ではない。論文は参照した公開記録ではプレプリントとして提示されている。[S08][S10]</p>
+
+<p><img src="https://mma.prnewswire.com/media/2878181/GinkosLab.jpg?p=medium" alt="GinkgoのBostonクラウドラボ施設写真" /></p>
+
+<p>写真：Ginkgo Bioworks提供、2026年2月の企業発表。[S10] 施設の実写真。写真だけから特定の研究に使った装置や全工程の無人化を推定しない。</p>
+
+<p><img src="https://cdn.prod.website-files.com/691b94a518664e13feebd656/69271aa196a118fe1a7af7ba_Screenshot%202025-11-26%20at%2010.14.26%E2%80%AFAM.png" alt="RACの公式構成画像" /></p>
+
+<p>画像：Ginkgo公式ハードウェアページ。[S11] ロボットアーム、プレート搬送トラック、接続点を示す説明画像。RACは装置を組み合わせる基盤で、カート単体がすべての実験機能を持つわけではない。</p>
+
+<h2 id="5-工程ことに人か必要かを比較する">5. 工程ごとに「人が必要か」を比較する</h2>
+
+<p>「公開確認」は文献が明示した範囲。「比較用想定」は部分自動化の例。「未確認」は資料から確定できないもの。一般的な写真や装置一覧から無人運用を補完しない。</p>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>工程</th>
+  <th>部分自動化の比較用想定</th>
+  <th>ECL型の公開確認範囲</th>
+  <th>Ginkgo CFPS例の公開確認範囲</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>目的・最初の条件の設定</td>
+  <td>人</td>
+  <td>利用者がソフトウェアで設計 [S03]</td>
+  <td>限定した目的のもとAIが条件を設計 [S10]</td>
+</tr>
+<tr>
+  <td>依頼受付・実験記述の処理</td>
+  <td>人・制御ソフト</td>
+  <td>ソフトウェアが命令・実行待ちを管理 [S05]</td>
+  <td>スキーマ検証→Catalyst→RAC [S09]</td>
+</tr>
+<tr>
+  <td>検体受領・開梱・登録</td>
+  <td>人</td>
+  <td>完全自動か未確認</td>
+  <td>完全自動か未確認</td>
+</tr>
+<tr>
+  <td>試薬・消耗品の準備</td>
+  <td>人</td>
+  <td>作業に応じManual／Robotic [S04]</td>
+  <td>人が準備 [S10]</td>
+</tr>
+<tr>
+  <td>装置への装填・回収</td>
+  <td>人</td>
+  <td>作業ごとの人・装置の分担。全面無人は未確認 [S05]</td>
+  <td>人が装填・回収 [S10]</td>
+</tr>
+<tr>
+  <td>分注・処理・測定</td>
+  <td>個別装置が実行</td>
+  <td>対応ワークセル内で複数操作を連携 [S04]</td>
+  <td>対応する限定ワークフローを自動実行 [S10]</td>
+</tr>
+<tr>
+  <td>データ取得・返却</td>
+  <td>保存・解析を人が管理する例</td>
+  <td>データをクラウドへ自動アップロード [S05]</td>
+  <td>データ取得・解析の反復を接続 [S09]</td>
+</tr>
+<tr>
+  <td>次の実験条件の決定</td>
+  <td>人</td>
+  <td>自律決定が必須とはされていない</td>
+  <td>閉ループで条件を選択 [S10]</td>
+</tr>
+<tr>
+  <td>故障・例外対応・保守</td>
+  <td>人</td>
+  <td>全面的な無人対応は未確認</td>
+  <td>人のシステム監督あり [S10]</td>
+</tr>
+<tr>
+  <td>梱包・出荷</td>
+  <td>人</td>
+  <td>完全無人か未確認</td>
+  <td>研究の評価範囲では未確認</td>
+</tr>
+</tbody>
+</table></div>
+
+<h2 id="6-今回のテモに対応する仮想構成">6. 今回のデモに対応する仮想構成</h2>
+
+<h3 id="基本構成現場スタッフ付きの遠隔統合ラホ">基本構成：現場スタッフ付きの遠隔・統合ラボ</h3>
+
+<p>以下は<strong>今回の設計仮定</strong>。実在施設の能力・運用についての主張ではない。</p>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>担当・要素</th>
+  <th>役割</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>実験者</td>
+  <td>対象試料と実験計画を作成・承認。結果を受け取る</td>
+</tr>
+<tr>
+  <td>遺伝子合成会社</td>
+  <td>別施設として依頼配列を受け付け、製造・確認・発送。社内工程の自動化率は未設定</td>
+</tr>
+<tr>
+  <td>クラウドラボのスタッフ</td>
+  <td>検体受領・登録・装填・補充・例外対応。出荷を行う場合は梱包も担当</td>
+</tr>
+<tr>
+  <td>受付・計画・実行ソフト</td>
+  <td>注文ID、検体ID、計画版、実行IDを管理し、機器へ実行指示</td>
+</tr>
+<tr>
+  <td>分注装置</td>
+  <td>Biomek/Echo/Hamilton等に相当する機能を持つ分注器を1台以上。特定ブランドの実装とは結び付けない</td>
+</tr>
+<tr>
+  <td>搬送・温調・測定</td>
+  <td>必要な接続が用意された範囲で、プレートを運び、反応と測定を行う</td>
+</tr>
+<tr>
+  <td>結果保管・返却ソフト</td>
+  <td>測定結果と検体・実行を対応付け、利用者に返却</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>温調装置と蛍光プレートリーダーがあれば無細胞GFPを題材にできる、という機能上の設計例を置く。実機適合や方法の妥当性は未検証。無細胞系を例にする限り、生きた菌の培養を必須装置・工程にしない。</p>
+
+<h3 id="拡張構成結果を次の計画へ戻す">拡張構成：結果を次の計画へ戻す</h3>
+
+<p>解析ソフトやAIが次の条件を提案する接続を追加する。Ginkgoの限定用途を参考にできるが、受領・補充・保守・出荷まで無人になるとは仮定しない。初期版では、人が次の計画を承認する段階を残す。</p>
+
+<h3 id="関係図の矢印か具体的に意味するもの">関係図の矢印が具体的に意味するもの</h3>
+
+<div class="table-scroll"><table>
+<thead>
+<tr>
+  <th>デモの矢印</th>
+  <th>デジタル情報</th>
+  <th>物理的な移動／人の関与の仮定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>実験者 ↔ 合成会社</td>
+  <td>依頼配列、注文、確認報告</td>
+  <td>DNA検体の発送は別の経路</td>
+</tr>
+<tr>
+  <td>合成会社 → ラボ</td>
+  <td>注文・検体・報告の対応情報</td>
+  <td>検体を輸送し、スタッフが受領・登録</td>
+</tr>
+<tr>
+  <td>実験者 → ラボ</td>
+  <td>対象検体、計画版、承認、実験依頼</td>
+  <td>ソフトが命令へ変換。必要な装填はスタッフ</td>
+</tr>
+<tr>
+  <td>ラボ → 実験者</td>
+  <td>実行IDと検体に対応する結果</td>
+  <td>物質の返送がある場合、別の発送工程</td>
+</tr>
+<tr>
+  <td>実験者 ↔ 自分の研究室</td>
+  <td>計画とデータの受け渡し</td>
+  <td>現場の手動操作と部分自動化。実際の経路は要確認</td>
+</tr>
+</tbody>
+</table></div>
+
+<p>攻撃者はこの構成に必ず侵入できるとは置かない。接点・権限・防御の証拠が必要。外部通信を使うためのネットワークと、各装置を直接インターネットへ公開することも別である。</p>
+
+<h2 id="7-ホスと決める事項">7. ボスと決める事項</h2>
+
+<ol>
+<li>基本想定は「スタッフ付き遠隔ラボ」でよいか。完全無人を要求する理由はあるか。</li>
+<li>無細胞合成と蛍光測定だけで題材として十分か。培養・別の分析装置は必要か。</li>
+<li>検体の受領・登録、装填、搬送、結果確認のどこを人が担うか。</li>
+<li>結果返却で止めるか、次の計画の提案・承認まで対象にするか。</li>
+<li>発注・確認報告・計画・結果について、どの形式や実システムを検証対象にするか。</li>
+</ol>
+
+<h2 id="8-根拠と未確認事項の管理">8. 根拠と未確認事項の管理</h2>
+
+<p>出典の詳細はsources.json、画像の出典はPHOTOS.mdで管理する。閲覧日だけでなく、資料の年・種類・確認できる主張を分ける。</p>
+
+<ul>
+<li>木賀研の装置構成・配線・権限・実メソッドは未監査。</li>
+<li>Biomekの現行商品説明は、研究室の既存ソフトの機能を保証しない。</li>
+<li>CMUの2021年リストは初期購入用で、現時点の稼働一覧ではない。</li>
+<li>企業が自動実行を説明していても、材料受領・保守・出荷まで無人とは推定しない。</li>
+<li>CFPSの閉ループ実験を、任意の生物実験の汎用自律化へ一般化しない。</li>
+<li>自動化率を示す統一した数値や、全施設共通の人員割合は今回取得できていない。</li>
+</ul>
+
+<h2 id="出典">出典</h2>
+
+<ul>
+<li><strong>S01</strong> Beckman Coulter：Biomek i5公式商品説明。<a href="https://www.beckman.com/liquid-handlers/biomek-i-series-automated-workstations/biomek-i5">https://www.beckman.com/liquid-handlers/biomek-i-series-automated-workstations/biomek-i5</a></li>
+<li><strong>S02</strong> Beckman Coulter：Echo 650公式商品説明。<a href="https://store.beckman.com/p/echo-650-series-acoustic-liquid-handlers/001-16079">https://store.beckman.com/p/echo-650-series-acoustic-liquid-handlers/001-16079</a></li>
+<li><strong>S03</strong> ECL：How Cloud Laboratories Work。<a href="https://www.emeraldcloudlab.com/how-it-works/">https://www.emeraldcloudlab.com/how-it-works/</a></li>
+<li><strong>S04</strong> ECL：ExperimentSampleManipulation公式文書。<a href="https://www.emeraldcloudlab.com/helpfiles/experimentsamplemanipulation">https://www.emeraldcloudlab.com/helpfiles/experimentsamplemanipulation</a></li>
+<li><strong>S05</strong> Arias et al. (2024)：Scientific Discovery at the Press of a Button: Navigating Emerging Cloud Laboratory Technology。査読論文。<a href="https://doi.org/10.1002/admt.202400084">https://doi.org/10.1002/admt.202400084</a></li>
+<li><strong>S06</strong> ECL：実行と装置の説明。<a href="https://www.emeraldcloudlab.com/how-it-works/run/">https://www.emeraldcloudlab.com/how-it-works/run/</a></li>
+<li><strong>S07</strong> CMU (2026-07-22)：Connecting Autonomous Laboratories to Speed Scientific Advancement。大学公式記事・施設写真。<a href="https://www.cmu.edu/news/stories/archives/2026/july/connecting-autonomous-laboratories-to-speed-scientific-advancement">https://www.cmu.edu/news/stories/archives/2026/july/connecting-autonomous-laboratories-to-speed-scientific-advancement</a></li>
+<li><strong>S08</strong> Smith et al. (2026)：Using a GPT-5-driven autonomous lab to optimize the cost and titer of cell-free protein synthesis。プレプリント公開記録。<a href="https://doi.org/10.64898/2026.02.05.703998">https://doi.org/10.64898/2026.02.05.703998</a></li>
+<li><strong>S09</strong> Ginkgo公式公開リポジトリ：ginkgo-automation-cfps。<a href="https://github.com/ginkgobioworks/ginkgo-automation-cfps">https://github.com/ginkgobioworks/ginkgo-automation-cfps</a></li>
+<li><strong>S10</strong> Ginkgo提供企業発表 (2026-02-05)：GPT-5を用いたCFPS閉ループ実験と人の介在。<a href="https://www.prnewswire.com/news-releases/ginkgo-bioworks-autonomous-laboratory-driven-by-openais-gpt-5-achieves-40-improvement-over-state-of-the-art-scientific-benchmark-302680619.html">https://www.prnewswire.com/news-releases/ginkgo-bioworks-autonomous-laboratory-driven-by-openais-gpt-5-achieves-40-improvement-over-state-of-the-art-scientific-benchmark-302680619.html</a></li>
+<li><strong>S11</strong> Ginkgo公式ハードウェア説明：RACs &amp; Tiles。<a href="https://www.ginkgo.bio/product/hardware">https://www.ginkgo.bio/product/hardware</a></li>
+<li><strong>S12</strong> CMU (2021)：Instrument list for initial purchases。初期購入リスト。<a href="https://events.mcs.cmu.edu/cloud-lab-information-sessions/wp-content/uploads/sites/24/2021/06/CMU_Academic_Cloud_Lab_instrument_list_20210623.pdf">https://events.mcs.cmu.edu/cloud-lab-information-sessions/wp-content/uploads/sites/24/2021/06/CMU_Academic_Cloud_Lab_instrument_list_20210623.pdf</a></li>
+</ul>
+<footer>本文：REPORT.md ／ 写真出典：PHOTOS.md ／ 根拠管理：sources.json<br>写真は公式公開URLを参照します。表示にはインターネット接続が必要です。</footer></main></body></html>
